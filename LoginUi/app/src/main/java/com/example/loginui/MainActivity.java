@@ -31,7 +31,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         loginbtn = (Button) findViewById(R.id.loginbtn);
-        Intent maintohome = new Intent(MainActivity.this, home.class);
         loginbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -41,6 +40,8 @@ public class MainActivity extends AppCompatActivity {
                 String pass = etpassword.getText().toString();
                 if(!uname.equals("") && !pass.equals("")){
                     Toast.makeText(MainActivity.this, "you are Logined as "+uname, Toast.LENGTH_LONG).show();
+                    Intent maintohome = new Intent(MainActivity.this, Home.class);
+                    maintohome.putExtra("uname",uname);
                     etuname.setText("");
                     etpassword.setText("");
                     startActivity(maintohome);

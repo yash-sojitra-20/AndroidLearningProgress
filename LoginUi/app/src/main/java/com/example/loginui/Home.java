@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -14,7 +13,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-public class home extends AppCompatActivity {
+public class Home extends AppCompatActivity {
 
     Button logoutbtn;
     TextView tvwelcometxt;
@@ -29,11 +28,15 @@ public class home extends AppCompatActivity {
             return insets;
         });
         logoutbtn = (Button) findViewById(R.id.logoutbtn);
-        Intent hometomain = new Intent(home.this, MainActivity.class);
+        Intent tvwelcometxtintent = getIntent();
+        String uname = tvwelcometxtintent.getStringExtra("uname");
+        tvwelcometxt = (TextView) findViewById(R.id.tvwelcometxt);
+        tvwelcometxt.setText("welcome "+uname);
         logoutbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(home.this,"you are Logout",Toast.LENGTH_SHORT).show();
+                Toast.makeText(Home.this,"you are Logout",Toast.LENGTH_SHORT).show();
+                Intent hometomain = new Intent(Home.this, MainActivity.class);
                 startActivity(hometomain);
             }
         });
