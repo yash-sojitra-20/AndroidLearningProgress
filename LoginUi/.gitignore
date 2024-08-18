@@ -1,3 +1,4 @@
+.git/
 google-services.json
 *.iml
 .gradle
