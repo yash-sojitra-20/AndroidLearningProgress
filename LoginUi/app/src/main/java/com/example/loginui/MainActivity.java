@@ -1,6 +1,8 @@
 package com.example.loginui;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -23,10 +25,23 @@ public class MainActivity extends AppCompatActivity {
     EditText etpassword;
     DatabaseReference databaseReference;
     private static final String TAG = "MainActivity";
+    private static final String PREFS_NAME = "LoginPrefs"; // Name for SharedPreferences
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Check if the user is already logged in
+        SharedPreferences preferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        if (preferences.getBoolean("loggedIn", false)) {
+            // User is already logged in, redirect to Home activity
+            Intent intent = new Intent(MainActivity.this, Home.class);
+            intent.putExtra("uname", preferences.getString("username", ""));
+            startActivity(intent);
+            finish();
+            return; // Skip the rest of the onCreate logic
+        }
+
         setContentView(R.layout.activity_main);
 
         loginbtn = findViewById(R.id.loginbtn);
@@ -54,15 +69,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void authenticateUser(String inputUsername, String inputPassword) {
-        Log.d(TAG,"Inside auth");
+        Log.d(TAG, "Inside auth");
 
-        // Use addListenerForSingleValueEvent to check all users under "users" node
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 boolean userFound = false;
 
-                // Loop through all users
                 for (DataSnapshot userSnapshot : snapshot.getChildren()) {
                     String username = userSnapshot.child("username").getValue(String.class);
                     String password = userSnapshot.child("password").getValue(String.class);
@@ -73,6 +86,14 @@ public class MainActivity extends AppCompatActivity {
                         if (password != null && password.equals(inputPassword)) {
                             Log.d(TAG, "Password matched for user: " + username);
                             Toast.makeText(MainActivity.this, "You are logged in as " + username, Toast.LENGTH_LONG).show();
+
+                            // Save login status and username in SharedPreferences
+                            SharedPreferences preferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+                            SharedPreferences.Editor editor = preferences.edit();
+                            editor.putBoolean("loggedIn", true);
+                            editor.putString("username", username);
+                            editor.apply(); // Apply the changes
+
                             Intent maintohome = new Intent(MainActivity.this, Home.class);
                             maintohome.putExtra("uname", username);
                             etuname.setText("");
